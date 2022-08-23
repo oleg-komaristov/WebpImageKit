@@ -17,7 +17,7 @@
 extern CGSize scaledImageSize(const CGSize imgSize, const CGSize targetSize, const CGFloat scaleFactor);
 static NSUInteger gcdOf(size_t const count, NSUInteger const * const values);
 
-static void *kLoopsNumberKey = &kLoopsNumberKey;
+static void *kLoopCountKey = &kLoopCountKey;
 
 @implementation UIImage (WebpDecoder)
 
@@ -33,13 +33,13 @@ static void *kLoopsNumberKey = &kLoopsNumberKey;
 + (nullable instancetype)webpImageWithData:(NSData * const)data
                                displaySize:(const CGSize)size
                                scaleFactor:(const CGFloat)scaleFactor {
-    return [self webpImageWithData:data displaySize:size scaleFactor:scaleFactor loopNumber:nil];
+    return [self webpImageWithData:data displaySize:size scaleFactor:scaleFactor loopCount:nil];
 }
 
 + (nullable instancetype)webpImageWithData:(NSData *const)data
                                displaySize:(const CGSize)size
                                scaleFactor:(const CGFloat)scaleFactor
-                                loopNumber:(NSUInteger * __nullable)loopNumber {
+                                 loopCount:(NSUInteger * __nullable)loopCount {
     if (!data.webpIsImage) {
         return nil;
     }
@@ -75,7 +75,7 @@ static void *kLoopsNumberKey = &kLoopsNumberKey;
         CFRelease(colorSpace);
         WebPDemuxReleaseIterator(&iterator);
         WebPDemuxDelete(demuxer);
-        if (loopNumber) { *loopNumber = 0; }
+        if (loopCount) { *loopCount = NSNotFound; }
         return resultImg;
     }
     CGBitmapInfo bitmapInfo = kCGBitmapByteOrder32Host;
@@ -89,9 +89,9 @@ static void *kLoopsNumberKey = &kLoopsNumberKey;
         return nil;
     }
 
-    const __auto_type loopCount = WebPDemuxGetI(demuxer, WEBP_FF_LOOP_COUNT);
-    if (loopNumber) {
-        *loopNumber = loopCount;
+    const __auto_type loopCountValue = WebPDemuxGetI(demuxer, WEBP_FF_LOOP_COUNT);
+    if (loopCount) {
+        *loopCount = MAX(loopCountValue, 0);
     }
     NSMutableArray<WIKAnimationFrame *> *frames = [NSMutableArray new];
     do {
@@ -153,7 +153,7 @@ static void *kLoopsNumberKey = &kLoopsNumberKey;
         } while (--repeatCount > 0);
     }
     __auto_type animatedImage = [UIImage animatedImageWithImages:images duration:fullDuration];
-    animatedImage.webpLoopNumber = MIN(1, loopCount);
+    animatedImage.webpLoopCount = MAX(loopCountValue, 0);
     return animatedImage;
 }
 
@@ -196,7 +196,7 @@ static void *kLoopsNumberKey = &kLoopsNumberKey;
     if (0 == frames.count) {
         return (__bridge_transfer NSData *)webpCreateDataFromCGImage(self.CGImage, config);
     }
-    return [UIImage webpDataWithAnimationFrames:frames config:config loopCount:MIN(self.webpLoopNumber, 1)];
+    return [UIImage webpDataWithAnimationFrames:frames config:config loopCount:self.webpLoopCount];
 }
 
 + (nullable NSData *)webpDataWithAnimationFrames:(NSArray<WIKAnimationFrame *> * const)frames
@@ -287,12 +287,16 @@ CGSize scaledImageSize(const CGSize imgSize, const CGSize targetSize, const CGFl
 
 @implementation UIImage (WebPA)
 
-- (NSUInteger)webpLoopNumber {
-    return [objc_getAssociatedObject(self, kLoopsNumberKey) unsignedIntegerValue];
+- (NSUInteger)webpLoopCount {
+    NSNumber *value = objc_getAssociatedObject(self, kLoopCountKey);
+	if (nil == value) {
+        return (0 < self.images.count ? 1 : NSNotFound);
+	}
+    return [value unsignedIntegerValue];
 }
 
-- (void)setWebpLoopNumber:(NSUInteger)number {
-    objc_setAssociatedObject(self, kLoopsNumberKey, @(number), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+- (void)setWebpLoopCount:(NSUInteger)count {
+    objc_setAssociatedObject(self, kLoopCountKey, @(count), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 @end

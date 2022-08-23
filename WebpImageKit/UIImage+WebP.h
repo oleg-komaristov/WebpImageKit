@@ -57,7 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Creates a new UIImage instance from the data in WebP format. The resulting image will
  * have a given size and scale factor. Returns number of loops animation should be played
- * in the `loopNumber` parameter.
+ * in the `loopCount` parameter.
  * @warning This method expects the size of the resulting image in points not in
  *          pixels as `webpImageWithData:displaySize:` method.
  *
@@ -67,14 +67,14 @@ NS_ASSUME_NONNULL_BEGIN
  *        Size of the result image in points.
  * @param scaleFactor
  *        The scale factor of the output image.
- * @param loopNumber
- *        The number of loops to play for animated images (0 in case of normal image).
+ * @param loopCount
+ *        The number of loops to play for animated images (NSNotFound in case of normal image).
  * @return New image or nil if decoding failed or format version unsupported.
  */
 + (nullable instancetype)webpImageWithData:(NSData *const)data
                                displaySize:(const CGSize)size
                                scaleFactor:(const CGFloat)scaleFactor
-                                loopNumber:(NSUInteger * __nullable)loopNumber;
+                                 loopCount:(NSUInteger * __nullable)loopCount;
 
 @end
 
@@ -119,9 +119,9 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UIImage (WebPA)
 
 /**
- * The number of animation cycles to play. For non-animated images, this value is 0.
+ * The number of animation cycles to play. For non-animated images, this value is NSNotFound.
  */
-@property (nonatomic) NSUInteger webpLoopNumber;
+@property (nonatomic) NSUInteger webpLoopCount;
 
 @end
 
