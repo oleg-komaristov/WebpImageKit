@@ -14,6 +14,15 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UIImage (WebpDecoder)
 
 /**
+ * Checks `data` contains a WebP encoded image.
+ *
+ * @param data
+ *        Binary data to check.
+ * @return YES, if a magic cookie of the WebP format is found.
+ */
++ (BOOL)isWebpImageData:(NSData * const)data;
+
+/**
  * Creates a new UIImage instance from the data in WebP format.
  *
  * @param data

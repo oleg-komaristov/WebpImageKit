@@ -21,6 +21,10 @@ static void *kLoopCountKey = &kLoopCountKey;
 
 @implementation UIImage (WebpDecoder)
 
++ (BOOL)isWebpImageData:(NSData * const)data {
+    return data.webpIsImage;
+}
+
 + (nullable instancetype)webpImageWithData:(NSData * const)data {
     return [self webpImageWithData:data displaySize:CGSizeZero];
 }
