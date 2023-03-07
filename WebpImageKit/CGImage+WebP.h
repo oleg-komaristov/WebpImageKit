@@ -36,14 +36,17 @@ CFDataRef __nullable WebpDataCreateFromImage(CGImageRef __nonnull imageRef, WIKE
 CGImageRef __nullable WebpImageCreateFromData(CFDataRef __nonnull dataRef) CF_RETURNS_RETAINED;
 
 /**
- * Returns YES if given data contains image in WebP format.
+ * Returns an image object from the binary data in WebP format. The resulting
+ * image size is limited to the `maxDimension` value.
+ * @warning This method doesn't support animated images. Use UIImage's methods for animations.
  *
  * @param dataRef
- *        Image data.
+ *        Image data in WebP format.
+ * @param maxDisplaySize
+ *        Maximum size of the image in pixels. For '0' - uses the original image size.
  * @return
- *        YES if data contains image in WebP format.
+ *        An image object, or NULL if an error occurs. You are responsible for releasing this object using CFRelease.
  */
-BOOL WebpIsImageData(CFDataRef __nonnull dataRef);
+CGImageRef __nullable WebpImageCreateFromDataWithSize(CFDataRef __nonnull dataRef, UInt32 maxDisplaySize) CF_RETURNS_RETAINED;
 
 CF_EXTERN_C_END
-

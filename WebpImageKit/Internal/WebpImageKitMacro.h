@@ -34,4 +34,27 @@ void webp_execCleanupBlock(__strong webp_cleanup_block *block);
 
 #define meta_macro_concat_(A, B) A ## B
 
+NS_INLINE CGSize scaledImageSize(const CGSize imgSize, const CGSize targetSize, const CGFloat scaleFactor) {
+    __auto_type rWidth = imgSize.width;
+    __auto_type rHeight = imgSize.height;
+    if (targetSize.width > 0.0 && targetSize.height > 0.0) {
+        const __auto_type tWidth = targetSize.width * MAX(1.0, scaleFactor);
+        const __auto_type tHeight = targetSize.height * MAX(1.0, scaleFactor);
+        const __auto_type sRatio = imgSize.width / imgSize.height;
+        const __auto_type tRatio = tWidth / tHeight;
+        if (sRatio > tRatio) {
+            rWidth = tWidth;
+            rHeight = ceil(tWidth / sRatio);
+        }
+        else {
+            rHeight = tHeight;
+            rWidth = ceil(tHeight * sRatio);
+        }
+        rWidth = MIN(imgSize.width, rWidth);
+        rHeight = MIN(imgSize.height, rHeight);
+    }
+    return CGSizeMake(rWidth, rHeight);
+}
+
+
 #endif /* WebpImageKitMacro_h */

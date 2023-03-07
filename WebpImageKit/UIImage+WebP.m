@@ -13,8 +13,8 @@
 #import "NSData+WebP.h"
 #import "CoreGraphics+WebP.h"
 #import "WIKAnimationFrame.h"
+#import "WebpImageKitMacro.h"
 
-extern CGSize scaledImageSize(const CGSize imgSize, const CGSize targetSize, const CGFloat scaleFactor);
 static NSUInteger gcdOf(size_t const count, NSUInteger const * const values);
 
 static void *kLoopCountKey = &kLoopCountKey;
@@ -69,11 +69,11 @@ static void *kLoopCountKey = &kLoopCountKey;
     __auto_type canvasHeight = (size_t) WebPDemuxGetI(demuxer, WEBP_FF_CANVAS_HEIGHT);
     const __auto_type originalSize = CGSizeMake(canvasWidth, canvasHeight);
     const __auto_type scaledSize = scaledImageSize(originalSize, size, scaleFactor);
-    const __auto_type isScaledOutput = CGSizeEqualToSize(originalSize, scaledSize);
+    const __auto_type isScaledOutput = !CGSizeEqualToSize(originalSize, scaledSize);
     if (!(flags & ANIMATION_FLAG)) {
         __auto_type cgImage = webpCreateCGImage(iterator.fragment,
                                                 colorSpace,
-                                                isScaledOutput ? CGSizeZero : scaledSize);
+                                                isScaledOutput ? scaledSize : CGSizeZero);
         __auto_type resultImg = [[UIImage alloc] initWithCGImage:cgImage scale:scale orientation:UIImageOrientationUp];
         CGImageRelease(cgImage);
         CFRelease(colorSpace);
@@ -266,28 +266,6 @@ static void *kLoopCountKey = &kLoopCountKey;
 }
 
 @end
-
-CGSize scaledImageSize(const CGSize imgSize, const CGSize targetSize, const CGFloat scaleFactor) {
-    __auto_type rWidth = imgSize.width;
-    __auto_type rHeight = imgSize.height;
-    if (targetSize.width > 0.0 && targetSize.height > 0.0) {
-        const __auto_type tWidth = targetSize.width * MAX(1.0, scaleFactor);
-        const __auto_type tHeight = targetSize.height * MAX(1.0, scaleFactor);
-        const __auto_type sRatio = imgSize.width / imgSize.height;
-        const __auto_type tRatio = tWidth / tHeight;
-        if (sRatio > tRatio) {
-            rWidth = tWidth;
-            rHeight = ceil(tWidth / sRatio);
-        }
-        else {
-            rHeight = tHeight;
-            rWidth = ceil(tHeight * sRatio);
-        }
-        rWidth = MIN(imgSize.width, rWidth);
-        rHeight = MIN(imgSize.height, rHeight);
-    }
-    return CGSizeMake(rWidth, rHeight);
-}
 
 @implementation UIImage (WebPA)
 
