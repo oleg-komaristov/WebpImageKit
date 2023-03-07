@@ -17,3 +17,5 @@ FOUNDATION_EXPORT const unsigned char WebpImageKitVersionString[];
 #import <WebpImageKit/WIKAnimationFrame.h>
 #import <WebpImageKit/WIKEncoderConfig.h>
 #import <WebpImageKit/UIImage+WebP.h>
+#import <WebpImageKit/CGImage+WebP.h>
+
