@@ -10,16 +10,6 @@
 #import "CoreGraphics+WebP.h"
 #import "WebpImageKitMacro.h"
 
-/**
- * Returns YES if given data contains image in WebP format.
- *
- * @param dataRef
- *        Image data.
- * @return
- *        YES if data contains image in WebP format.
- */
-extern BOOL WebpIsImageData(CFDataRef __nonnull dataRef);
-
 CFDataRef __nullable WebpDataCreateFromImage(CGImageRef __nonnull imageRef, WIKEncoderConfig * const __nonnull config) CF_RETURNS_RETAINED {
     if (!imageRef || !config) {
         return NULL;

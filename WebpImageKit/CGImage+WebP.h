@@ -49,4 +49,14 @@ CGImageRef __nullable WebpImageCreateFromData(CFDataRef __nonnull dataRef) CF_RE
  */
 CGImageRef __nullable WebpImageCreateFromDataWithSize(CFDataRef __nonnull dataRef, UInt32 maxDisplaySize) CF_RETURNS_RETAINED;
 
+/**
+ * Returns YES if given data contains image in WebP format.
+ *
+ * @param dataRef
+ *        Image data.
+ * @return
+ *        YES if data contains image in WebP format.
+ */
+BOOL WebpIsImageData(CFDataRef __nonnull dataRef);
+
 CF_EXTERN_C_END
