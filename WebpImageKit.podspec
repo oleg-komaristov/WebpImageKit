@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'WebpImageKit'
-  s.version          = '0.3.2'
+  s.version          = '0.3.3'
   s.summary          = 'ObjC wrapper to WebP encoder/decoder from WebM Project.'
   s.description      = <<-DESC
   Provides WebP format support starting iOS 12, including encoding and decoding of animated WebP images.
@@ -14,5 +14,5 @@ Pod::Spec.new do |s|
   s.source_files = 'WebpImageKit/**/*'
   s.public_header_files = 'WebpImageKit/*.h'
   s.frameworks = 'UIKit', 'Accelerate'
-  s.dependency 'libwebp', '~> 1.0'
+  s.dependency 'libwebp', '~> 1.3.2'
 end

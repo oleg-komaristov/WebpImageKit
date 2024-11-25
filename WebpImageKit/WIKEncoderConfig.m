@@ -12,6 +12,7 @@
 #import "WIKEncoderConfig+Internal.h"
 
 @implementation WIKEncoderConfig
+@synthesize mode = _mode;
 @synthesize targetQuality = _quality;
 @synthesize targetFileSize = _fileSize;
 @synthesize maxPixelSize = _maxPixelSize;
@@ -80,7 +81,6 @@
 }
 
 - (BOOL)setupWebpEncoderConfiguration:(WebPConfig *)config {
-
     if (!config || !WebPConfigPreset(config, self.webpPreset, self.targetQuality.intValue)) {
         return NO;
     }
@@ -156,6 +156,76 @@
     return 0 < WebPValidateConfig(config);
 }
 
+- (instancetype)init {
+    return [self initWithQuality:75.f andPreset:WIKPresetDefault];
+}
+
+- (nullable WIKEncoderConfig *)initWithQuality:(int)quality andPreset:(WIKPreset)preset {
+    struct WebPConfig initCfg;
+    if (!WebPConfigPreset(&initCfg, (WebPPreset)preset, quality)) {
+        return nil;
+    }
+    if (self = [super init]) {
+        if (WEBP_HINT_DEFAULT != initCfg.image_hint) {
+            _contentHint = (WIKContentHint)initCfg.image_hint;
+        }
+        _mode = initCfg.lossless;
+        _preset = preset;
+        _quality = @(initCfg.quality);
+        _qmin = @(initCfg.qmin);
+        _qmax = @(initCfg.qmax);
+        _passes = @(initCfg.pass);
+        _method = @(initCfg.method);
+        _preprocessing = @(initCfg.preprocessing);
+        _targetPSNR = @(initCfg.target_PSNR);
+        _threadLevel = @(initCfg.thread_level);
+        _lowMemory = @(initCfg.low_memory);
+        _segments = @(initCfg.segments);
+        _snsStrength = @(initCfg.sns_strength);
+        _filterStrength = @(initCfg.filter_strength);
+        _filterSharpness = @(initCfg.filter_sharpness);
+        _filterType = @(initCfg.filter_type);
+        _alphaCompression = @(initCfg.alpha_compression);
+        _autoFilter = @(initCfg.autofilter);
+        _alphaFiltering = @(initCfg.alpha_filtering);
+        _alphaQuality = @(initCfg.alpha_quality);
+        _showCompressed = @(initCfg.show_compressed);
+        _partitions = @(initCfg.partitions);
+        _partitionLimit = @(initCfg.partition_limit);
+        _sharpYuv = @(initCfg.use_sharp_yuv);
+    }
+    return self;
+}
+
+- (NSString *)description {
+    __auto_type content = @{
+        @"mode": WIKEncoderModeLossLess == _mode ? @"lossLess" : @"lossy",
+        @"quality": self.targetQuality ?: @"null",
+        @"qmin": self->_qmin ?: @"",
+        @"qmax": self->_qmax ?: @"",
+        @"method": self.method ?: @"null",
+        @"passes": self.passes ?: @"null",
+        @"preprocessing": self.preprocessing ?: @"null",
+        @"targetPSNR": self.targetPSNR ?: @"null",
+        @"threadLevel": self.threadLevel ?: @"null",
+        @"lowMemory": self.lowMemory ?: @"null",
+        @"segments": self.segments ?: @"null",
+        @"snsStrength": self.snsStrength ?: @"null",
+        @"filterStrength": self.filterStrength ?: @"null",
+        @"filterSharpness": self.filterSharpness ?: @"null",
+        @"filterType": self.filterType ?: @"null",
+        @"alphaCompression": self.alphaCompression ?: @"null",
+        @"autoFilter": self.autoFilter ?: @"null",
+        @"alphaFiltering": self.alphaFiltering ?: @"null",
+        @"alphaQuality": self.alphaQuality ?: @"null",
+        @"showCompressed": self.showCompressed ?: @"null",
+        @"partitions": self.partitions ?: @"null",
+        @"partitionLimit": self.partitionLimit ?: @"null",
+        @"sharpYuv": self.sharpYuv ?: @"null"
+    };
+    return [content description];
+}
+
 @end
 
 @implementation WIKEncoderConfigBuilder {
@@ -175,10 +245,9 @@
                                     preset:(const WIKPreset)preset
                                contentHint:(const WIKContentHint)contentHint {
     if (self = [super init]) {
-        _config = [WIKEncoderConfig new];
-        _config->_preset = preset;
+        _config = [[WIKEncoderConfig alloc] initWithQuality:(int)trunc(MAX(MIN(quality, 1.0), 0.0) * 100)
+                                                  andPreset:preset];
         _config->_contentHint = contentHint;
-        _config->_quality = @((int)trunc(MAX(MIN(quality, 1.0), 0.0) * 100));
     }
     return self;
 }
@@ -187,8 +256,7 @@
                                 preset:(const WIKPreset)preset
                            contentHint:(const WIKContentHint)contentHint {
     if (self = [super init]) {
-        _config = [WIKEncoderConfig new];
-        _config->_preset = preset;
+        _config = [[WIKEncoderConfig alloc] initWithQuality:75 andPreset:preset];
         _config->_contentHint = contentHint;
         _config->_fileSize = @(bytesSize);
     }
