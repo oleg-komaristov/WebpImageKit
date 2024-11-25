@@ -11,12 +11,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NS_ENUM(int, WIKEncoderMode) {
+    WIKEncoderModeLossy = 0,
+    WIKEncoderModeLossLess = 1
+};
+
 /**
  * Encoder configuration. By default, all values are nil, and only non-nil
  * values are applied to the encoder configuration.
  */
 @interface WIKEncoderConfig: NSObject
 
+@property (nonatomic, readonly) WIKEncoderMode mode;                    // Lossless encoding (0=lossy(default), 1=lossless).
 @property (nonatomic, readonly, nullable) NSNumber *method;             // 0 (fast) - 6 (slower/better)
 @property (nonatomic, readonly, nullable) NSNumber *passes;             // number of entropy-analysis passes (in [1..10])
 @property (nonatomic, readonly, nullable) NSNumber *preprocessing;      // 0 - none, 1 - segment-smooth

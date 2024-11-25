@@ -12,11 +12,14 @@
 
 @interface WIKEncoderConfig () {
 @public
+    WIKEncoderMode _mode;
     WIKPreset _preset;
     WIKContentHint _contentHint;
     NSNumber *_quality;
     NSNumber *_fileSize;
     NSValue *_maxPixelSize;
+    NSNumber *_qmin;
+    NSNumber *_qmax;
 
     NSNumber *_method;
     NSNumber *_passes;
@@ -45,5 +48,7 @@
 @property (nonatomic, readonly, nullable) NSValue *maxPixelSize;
 
 - (BOOL)setupWebpEncoderConfiguration:(nonnull WebPConfig *)config;
+
+- (nullable WIKEncoderConfig *)initWithQuality:(int)quality andPreset:(WIKPreset)preset;
 
 @end
